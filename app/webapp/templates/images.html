@@ -1,0 +1,131 @@
+{% extends 'base.html'%}
+{% block content %}
+    {% if error_text is not None %}
+        <h1 style="color: red;">{{ error_text }}</h1>
+    {% endif %}
+<div class="row mt-5">
+    {%for image in images%}
+    <div class="col-sm-6">
+          <div class="row no-gutters" >
+            <div class="col-md-4">
+              <img src="{{image.image.url}}" class="card-img" style="width:120px;height: 120px;" alt="">
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">Подпись - {{image.sign}}</h5>
+                  <p> Автор - {{image.author}}</p>
+                     <p> Дата создания - {{image.created_at}}</p>
+                    <p>Дата редактирования - {{image.updated_at}}</p>
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-sm">
+                           <a href="{% url 'image_detail' image.pk %}">Детально</a>
+                        </div>
+                          {% if request.user.is_authenticated%}
+                          {% if request.user.username == image.author or perms.webapp.change_image%}
+                        <div class="col-sm">
+                           <a href="{% url 'image_edit' image.pk %}">Изменить</a>
+                        </div>
+                          {% endif %}
+                          {% if request.user.username == image.author or perms.webapp.delete_image%}
+                        <div class="col-sm">
+                            <form action="{% url 'image_delete' image.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm mr-5">Удалить</button>
+                        </form>
+                        </div>
+                          {% endif %}
+
+                           <div class="col-sm" id="add_btn" data-image-id="{{image.pk}}">
+
+                            <button id="add" type="submit" class="btn btn-secondary btn-sm mr-5">Добавить в избранное</button>
+
+                        </div>
+
+                          <div class="col-sm" id="remove_btn" data-image-id="{{image.pk}}">
+
+                            <button id="remove" type="submit"  class="btn btn-secondary btn-sm mr-5">Удалить из избранного</button>
+
+                        </div>
+
+                          {% endif %}
+                      </div>
+                    </div>
+              </div>
+            </div>
+          </div>
+    </div>
+    {%endfor%}
+
+</div>
+
+{% endblock %}
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script>
+    $('#add').click(function (e) {
+        e.preventDefault();
+        $(this).remove()
+        const imageId = $(this).data('image-id')
+        console.log(imageId)
+        $.ajax({
+            url: `http://localhost:8000/api/image/${imageId}/tofav/`,
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (data) {
+                if (data.result === 'Photo added to favorite') {
+                    console.log('hello')
+                    let divBtn = $('#add_btn');
+                    let btnFav = document.createElement('button')
+                    btnFav.className="btn btn-secondary btn-sm mr-5";
+                    btnFav.type="submit";
+                    btnFav.id="add";
+                    btnFav.innerText="Удалить из избранного";
+                    divBtn.append(btnFav);
+
+
+
+
+                } else {
+                    console.log('deleted')
+                }
+
+            },
+            error: function (data) {
+                console.log('error')
+            }
+        });
+    })
+ $('#remove').click(function (e) {
+        e.preventDefault();
+        $(this).remove()
+        const imageId = $(this).data('image-id')
+        console.log(imageId)
+        $.ajax({
+            url: `http://localhost:8000/api/image/${imageId}/removefav/`,
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (data) {
+                if (data.result === 'Photo removed to favorite') {
+                    let divBtn = $('#remove_btn');
+                    let btnFav = document.createElement('button')
+                    btnFav.className="btn btn-secondary btn-sm mr-5";
+                    btnFav.type="submit";
+                    btnFav.id="remove";
+                    btnFav.innerText="Добавить в избранное";
+                    divBtn.append(btnFav);
+                } else {
+                    console.log('deleted')
+                }
+
+            },
+            error: function (data) {
+                console.log('error')
+            }
+        });
+    })
+
+</script>
