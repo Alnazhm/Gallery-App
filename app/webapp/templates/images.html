@@ -38,13 +38,13 @@
 
                            <div class="col-sm" id="add_btn" data-image-id="{{image.pk}}">
 
-                            <button id="add" type="submit" class="btn btn-secondary btn-sm mr-5">Добавить в избранное</button>
+                            <button id="add" type="submit" class="btn btn-secondary btn-sm mr-5 my_class">Добавить в избранное</button>
 
                         </div>
 
                           <div class="col-sm" id="remove_btn" data-image-id="{{image.pk}}">
 
-                            <button id="remove" type="submit"  class="btn btn-secondary btn-sm mr-5">Удалить из избранного</button>
+                            <button id="remove" type="submit"  class="btn btn-secondary btn-sm mr-5 my_class1">Удалить из избранного</button>
 
                         </div>
 
@@ -60,12 +60,17 @@
 </div>
 
 {% endblock %}
+
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
 <script>
-    $('#add').click(function (e) {
+
+    $('.my_class').click(function (e) {
         e.preventDefault();
-        $(this).remove()
+        console.log("HHelleeeeee")
         const imageId = $(this).data('image-id')
+        $(this).remove()
+
         console.log(imageId)
         $.ajax({
             url: `http://localhost:8000/api/image/${imageId}/tofav/`,
@@ -97,7 +102,7 @@
             }
         });
     })
- $('#remove').click(function (e) {
+ $('.my_remove').click(function (e) {
         e.preventDefault();
         $(this).remove()
         const imageId = $(this).data('image-id')
