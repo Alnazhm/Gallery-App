@@ -35,19 +35,21 @@
                         </form>
                         </div>
                           {% endif %}
-
+                        {% if image not in request.user.images.all %}
                            <div class="col-sm" id="add_btn" data-image-id="{{image.pk}}">
-
-                            <button id="add" type="submit" class="btn btn-secondary btn-sm mr-5 my_class">Добавить в избранное</button>
-
+                               <form action="{% url 'image_favorite' image.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button id="add" type="submit" class="btn btn-secondary btn-sm mr-5">Добавить в избранное</button>
+                               </form>
                         </div>
-
+                          {% else %}
                           <div class="col-sm" id="remove_btn" data-image-id="{{image.pk}}">
-
-                            <button id="remove" type="submit"  class="btn btn-secondary btn-sm mr-5 my_class1">Удалить из избранного</button>
-
+                               <form action="{% url 'image_favorite' image.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button id="remove" type="submit"  class="btn btn-secondary btn-sm mr-5">Удалить из избранного</button>
+                               </form>
                         </div>
-
+                          {% endif %}
                           {% endif %}
                       </div>
                     </div>
@@ -60,12 +62,11 @@
 </div>
 
 {% endblock %}
-
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 
 <script>
 
-    $('.my_class').click(function (e) {
+    $('.my_class ').click(function (e) {
         e.preventDefault();
         console.log("HHelleeeeee")
         const imageId = $(this).data('image-id')
